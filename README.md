@@ -13,6 +13,8 @@ gem install ruby-deepviz
 To use Deepviz API sdk you will need an API key you can get by
 subscribing the service free at https://account.deepviz.com/register/
 
+The complete Deepviz REST APIs documentation can be found at https://api.deepviz.com/docs/
+
 # Sandbox SDK API
 
 To upload a sample:
