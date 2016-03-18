@@ -41,13 +41,17 @@ class Sandbox
       return Result.new(status=NETWORK_ERROR, msg='%s - Error while connecting to Deepviz: %s' % [response.code, body['errmsg']])
     end
 
-    if response.code == 200
-      return Result.new(status=SUCCESS, msg=response.body['data'])
+    if response.code == 428
+      return Result.new(status=PROCESSING, msg='Analysis is running')
     else
-      if response.code >= 500
-        return Result.new(status=SERVER_ERROR, msg='%s - Error while connecting to Deepviz: %s' % [response.code, response.body['errmsg']])
+      if response.code == 200
+        return Result.new(status=SUCCESS, msg=response.body['data'])
       else
-        return Result.new(status=CLIENT_ERROR, msg='%s - Error while connecting to Deepviz: %s' % [response.code, response.body['errmsg']])
+        if response.code >= 500
+          return Result.new(status=SERVER_ERROR, msg='%s - Error while connecting to Deepviz: %s' % [response.code, response.body['errmsg']])
+        else
+          return Result.new(status=CLIENT_ERROR, msg='%s - Error while connecting to Deepviz: %s' % [response.code, response.body['errmsg']])
+        end
       end
     end
   end
@@ -78,7 +82,7 @@ class Sandbox
       if x != '.' and x != '..'
         file_path = File.join(path, x)
         result = upload_sample(api_key, file_path)
-        if result.status != SUCCESS
+        if result.status != SUCCESS and result.status != PROCESSING
           result.msg = '"Unable to upload file "%s"' % file_path
           return result
         end
@@ -235,13 +239,17 @@ class Sandbox
       return Result.new(status=NETWORK_ERROR, msg='%s - Error while connecting to Deepviz: %s' % [response.code, response.body['errmsg']])
     end
 
-    if response.code == 200
-      return Result.new(status=SUCCESS, msg=response.body['data'])
+    if response.code == 428
+      return Result.new(status=PROCESSING, msg='Analysis is running')
     else
-      if response.code >= 500
-        return Result.new(status=SERVER_ERROR, msg='%s - Error while connecting to Deepviz: %s' % [response.code, response.body['errmsg']])
+      if response.code == 200
+        return Result.new(status=SUCCESS, msg=response.body['data'])
       else
-        return Result.new(status=CLIENT_ERROR, msg='%s - Error while connecting to Deepviz: %s' % [response.code, response.body['errmsg']])
+        if response.code >= 500
+          return Result.new(status=SERVER_ERROR, msg='%s - Error while connecting to Deepviz: %s' % [response.code, response.body['errmsg']])
+        else
+          return Result.new(status=CLIENT_ERROR, msg='%s - Error while connecting to Deepviz: %s' % [response.code, response.body['errmsg']])
+        end
       end
     end
   end

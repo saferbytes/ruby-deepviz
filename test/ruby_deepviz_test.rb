@@ -1,7 +1,7 @@
 require 'deepviz/sandbox'
 require 'deepviz/intel'
 
-API_KEY = '0000000000000000000000000000000000000000000000000000000000000000'
+API_KEY = '213011545020c0cb4c9d471897c084d186093fb82e0c7e3b53a77be19749d0d9'
 
 sbx = Sandbox.new
 
@@ -14,7 +14,7 @@ result = sbx.upload_sample(API_KEY, './a6ca3b8c79e1b7e2a6ef046b0702aeb2')
 puts(result)
 
 # Upload folder
-result = sbx.upload_folder(API_KEY, '.')
+result = sbx.upload_folder(API_KEY, 'folder_to_upload')
 puts result
 
 # Retrieve sample scan result
