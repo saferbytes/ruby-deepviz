@@ -12,7 +12,6 @@ Gem::Specification.new do |spec|
     'lib/deepviz/intel.rb',
     'lib/deepviz/result.rb',
     'lib/deepviz/sandbox.rb',
-    'lib/deepviz/version.rb',
   ]
 
   spec.add_development_dependency 'bundler', '~> 1.12.a'
