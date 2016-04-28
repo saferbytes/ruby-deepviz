@@ -121,10 +121,6 @@ require 'deepviz/intel'
 intel = Intel.new
 result = intel.domain_info("my-api-key", {'domain' => ['google.com'], 'filters' => ["sub_domains"]})
 
-# List of the optional filters - they can be combined together
-# "whois",
-# "sub_domains"
-
 puts result
 ```
 
@@ -134,10 +130,6 @@ To retrieve newly registered domains in the last 7 days:
 require 'deepviz/intel'
 intel = Intel.new
 result = intel.domain_info("my-api-key", {'time_delta' => '7d', 'filters' => ["whois"]})
-
-# List of the optional filters - they can be combined together
-# "whois",
-# "sub_domains"
 
 puts result
 ```
