@@ -276,7 +276,7 @@ class Intel
   end
 
 
-  def sample_info(api_key, md5, filters=nil)
+  def sample_info(api_key, md5, filters)
     if api_key == nil or api_key == ''
       return Result.new(status=INPUT_ERROR, msg='API key cannot be null or empty String')
     end
@@ -286,13 +286,13 @@ class Intel
     end
 
     if filters != nil
-      if filters.length > 10
-        return Result.new(status=INPUT_ERROR, msg='Parameter \'output_filters\' takes at most 10 values (%s given)' % [filters.length])
+      if 0 < filters.length > 10
+        return Result.new(status=INPUT_ERROR, msg='Parameter \'output_filters\' takes at least 1 value and at most 10 values (%s given)' % [filters.length])
       end
 
       body = {:api_key => api_key, :md5 => md5, :output_filters => filters}
     else
-      body = {:api_key => api_key, :md5 => md5}
+      return Result.new(status=INPUT_ERROR, msg='Output filters cannot be null or empty')
     end
 
     return do_post(body, URL_INTEL_DOWNLOAD_REPORT)
