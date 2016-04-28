@@ -3,6 +3,7 @@ require 'deepviz/result'
 class Intel
 
   URL_INTEL_SEARCH            = 'https://api.deepviz.com/intel/search'
+  URL_INTEL_DOWNLOAD_REPORT   = 'https://api.deepviz.com/intel/report'
   URL_INTEL_IP                = 'https://api.deepviz.com/intel/network/ip'
   URL_INTEL_DOMAIN            = 'https://api.deepviz.com/intel/network/domain'
   URL_INTEL_SEARCH_ADVANCED   = 'https://api.deepviz.com/intel/search/advanced'
@@ -270,5 +271,29 @@ class Intel
     end
   end
 
+  def sample_result(api_key, md5)
+    return sample_info(api_key, md5, ['classification'])
+  end
+
+
+  def sample_info(api_key, md5, filters=nil)
+    if api_key == nil or api_key == ''
+      return Result.new(status=INPUT_ERROR, msg='API key cannot be null or empty String')
+    end
+
+    if md5 == nil or md5 == ''
+      return Result.new(status=INPUT_ERROR, msg='MD5 cannot be null or empty String')
+    end
+
+    if filters != nil
+      body = {:api_key => api_key, :md5 => md5, :output_filters => filters}
+    else
+      body = {:api_key => api_key, :md5 => md5}
+    end
+
+    return do_post(body, URL_INTEL_DOWNLOAD_REPORT)
+  end
+
   private :do_post
 end
+

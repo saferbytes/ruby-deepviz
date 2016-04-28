@@ -67,15 +67,6 @@ loop do
 end
 ```
 
-To retrieve scan result of a specific MD5
-
-```ruby
-require 'deepviz/sandbox'
-sbx = Sandbox.new
-result = sbx.sample_result("my-api-key", 'a6ca3b8c79e1b7e2a6ef046b0702aeb2')
-puts result
-```
-
 To retrieve full scan report for a specific MD5
 
 ```ruby
@@ -85,37 +76,32 @@ result = sbx.sample_report("my-api-key", "MD5-hash")
 puts result
 ```
 
+# Threat Intelligence SDK API
+
+To retrieve scan result of a specific MD5
+
+```ruby
+require 'deepviz/intel'
+intel = Intel.new
+result = intel.sample_result("my-api-key", 'a6ca3b8c79e1b7e2a6ef046b0702aeb2')
+puts result
+```
+
 To retrieve only specific parts of the report of a specific MD5 scan
 
 ```ruby
-require 'deepviz/sandbox'
-sbx = Sandbox.new
-result = sbx.sample_report("my-api-key", "MD5-hash", ["classification","rules"])
-
-# List of the optional filters - they can be combined together
-# "network_ip",
-# "network_ip_tcp",
-# "network_ip_udp",
-# "rules",
-# "classification",
-# "created_process",
-# "hook_user_mode",
-# "strings",
-# "created_files",
-# "hash",
-# "info",
-# "code_injection"
-
+require 'deepviz/intel'
+intel = Intel.new
+result = intel.sample_info("my-api-key", "MD5-hash", ["classification","rules"])
 puts result
 ```
-# Threat Intelligence SDK API
 
 To retrieve intel data about one or more IPs:
 
 ```ruby
 require 'deepviz/intel'
-ti = Intel.new
-result = ti.ip_info("my-api-key", {'ip' => ['1.22.28.94', '1.23.214.1']})
+intel = Intel.new
+result = intel.ip_info("my-api-key", {'ip' => ['1.22.28.94', '1.23.214.1']})
 puts result
 ```
 
@@ -123,8 +109,8 @@ To retrieve intel data about IPs contacted in the last 7 days:
 
 ```ruby
 require 'deepviz/intel'
-ti = Intel.new
-result = ti.ip_info("my-api-key", {'time_delta' => '7d'})
+intel = Intel.new
+result = intel.ip_info("my-api-key", {'time_delta' => '7d'})
 puts result
 ```
 
@@ -132,8 +118,8 @@ To retrieve intel data about one or more domains:
 
 ```ruby
 require 'deepviz/intel'
-ti = Intel.new
-result = ti.domain_info("my-api-key", {'domain' => ['google.com'], 'filters' => ["sub_domains"]})
+intel = Intel.new
+result = intel.domain_info("my-api-key", {'domain' => ['google.com'], 'filters' => ["sub_domains"]})
 
 # List of the optional filters - they can be combined together
 # "whois",
@@ -146,8 +132,8 @@ To retrieve newly registered domains in the last 7 days:
 
 ```ruby
 require 'deepviz/intel'
-ti = Intel.new
-result = ti.domain_info("my-api-key", {'time_delta' => '7d', 'filters' => ["whois"]})
+intel = Intel.new
+result = intel.domain_info("my-api-key", {'time_delta' => '7d', 'filters' => ["whois"]})
 
 # List of the optional filters - they can be combined together
 # "whois",
@@ -161,8 +147,8 @@ To run generic search based on strings
 
 ```ruby
 require 'deepviz/intel'
-ti = Intel.new
-result = ti.search("my-api-key", search_string="justfacebook.net")
+intel = Intel.new
+result = intel.search("my-api-key", search_string="justfacebook.net")
 puts result
 ```
 
@@ -171,8 +157,8 @@ To run advanced search based on parameters
 
 ```ruby
 require 'deepviz/intel'
-ti = Intel.new
-result = ti.advanced_search("my-api-key", {'domain' => ['justfacebook.net'], 'classification' => 'M'})
+intel = Intel.new
+result = intel.advanced_search("my-api-key", {'domain' => ['justfacebook.net'], 'classification' => 'M'})
 puts result
 ```
 
@@ -188,14 +174,14 @@ require 'deepviz/sandbox'
 
 API_KEY = "0000000000000000000000000000000000000000000000000000000000000000"
 
-ti = Intel.new
+intel = Intel.new
 sbx = Sandbox.new
 
-result_domains = ti.domain_info(API_KEY, {'time_delta' => '3d'})
+result_domains = intel.domain_info(API_KEY, {'time_delta' => '3d'})
 if result_domains.status == SUCCESS
   domains = result_domains.msg
   for domain in domains.keys
-    result_list_samples = ti.advanced_search(API_KEY, {'domain' => [domain], 'classification' => 'M'})
+    result_list_samples = intel.advanced_search(API_KEY, {'domain' => [domain], 'classification' => 'M'})
     if result_list_samples.status == SUCCESS
       if result_list_samples.msg.kind_of?(Array)
         if domains[domain]['tag'].any?
@@ -205,7 +191,7 @@ if result_domains.status == SUCCESS
         end
 
         for md5 in result_list_samples.msg
-          result_report = sbx.sample_report(API_KEY, md5, filters=['rules'])
+          result_report = intel.sample_info(API_KEY, md5, filters=['rules'])
           if result_report.status == SUCCESS
             puts '%s => [%s]' % [md5, result_report.msg['rules'].join(',')]
           else

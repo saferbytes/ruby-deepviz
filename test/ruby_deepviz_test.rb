@@ -17,10 +17,6 @@ puts(result)
 result = sbx.upload_folder(API_KEY, 'folder_to_upload')
 puts result
 
-# Retrieve sample scan result
-result = sbx.sample_result(API_KEY, 'a6ca3b8c79e1b7e2a6ef046b0702aeb2')
-puts result
-
 # Retrieve sample report
 result = sbx.sample_report(API_KEY, 'a6ca3b8c79e1b7e2a6ef046b0702aeb2')
 puts result
@@ -44,43 +40,51 @@ end
 
 ########################################################################################################################
 
-ti = Intel.new
+intel = Intel.new
+
+# To retrieve sample scan result
+result = intel.sample_result(API_KEY, 'a6ca3b8c79e1b7e2a6ef046b0702aeb2')
+puts result
+
+# To retrieve sample info
+result = intel.sample_info(API_KEY, 'a6ca3b8c79e1b7e2a6ef046b0702aeb2', ['hash', 'classification'])
+puts result
 
 # To retrieve intel data about  IPs in the last 7 days:
-result = ti.ip_info(API_KEY, {'time_delta' => '7d'})
+result = intel.ip_info(API_KEY, {'time_delta' => '7d'})
 puts result
 
 # To retrieve intel data about one or more IPs:
-result = ti.ip_info(API_KEY, {'ip' => ['1.22.28.94', '1.23.214.1']})
+result = intel.ip_info(API_KEY, {'ip' => ['1.22.28.94', '1.23.214.1']})
 puts result
 
 # To retrieve intel data about one or more domains:
-result = ti.domain_info(API_KEY, {'domain' => ['google.com']})
+result = intel.domain_info(API_KEY, {'domain' => ['google.com']})
 puts result
 
 # To retrieve newly registered domains in the last 7 days:
-result = ti.domain_info(API_KEY, {'time_delta' => '7d'})
+result = intel.domain_info(API_KEY, {'time_delta' => '7d'})
 puts result
 
 # To run generic search based on strings
 # (find all IPs, domains, samples related to the searched keyword):
-result = ti.search(API_KEY, search_string='justfacebook.net')
+result = intel.search(API_KEY, search_string='justfacebook.net')
 puts result
 
 # To run advanced search based on parameters
 # (find all MD5 samples connecting to a domain and determined as malicious):
-result = ti.advanced_search(API_KEY, {'domain' => ['justfacebook.net'], 'classification' => 'M'})
+result = intel.advanced_search(API_KEY, {'domain' => ['justfacebook.net'], 'classification' => 'M'})
 puts result
 
 # Find all domains registered in the last 7 days, print out the malware tags related to them and
 # list all MD5 samples connecting to them. Then for each one of the samples retrieve the matched
 # behavioral rules
 
-result_domains = ti.domain_info(API_KEY, {'time_delta' => '3d'})
+result_domains = intel.domain_info(API_KEY, {'time_delta' => '3d'})
 if result_domains.status == SUCCESS
   domains = result_domains.msg
   for domain in domains.keys
-    result_list_samples = ti.advanced_search(API_KEY, {'domain' => [domain], 'classification' => 'M'})
+    result_list_samples = intel.advanced_search(API_KEY, {'domain' => [domain], 'classification' => 'M'})
     if result_list_samples.status == SUCCESS
       if result_list_samples.msg.kind_of?(Array)
         if domains[domain]['tag'].any?
@@ -90,7 +94,7 @@ if result_domains.status == SUCCESS
         end
 
         for md5 in result_list_samples.msg
-          result_report = sbx.sample_report(API_KEY, md5, filters=['rules'])
+          result_report = intel.sample_info(API_KEY, md5, filters=['rules'])
           if result_report.status == SUCCESS
             puts '%s => [%s]' % [md5, result_report.msg['rules'].join(',')]
           else

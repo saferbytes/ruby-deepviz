@@ -140,12 +140,7 @@ class Sandbox
   end
 
 
-  def sample_result(api_key, md5)
-    return sample_report(api_key, md5, ['classification'])
-  end
-
-
-  def sample_report(api_key, md5, filters=nil)
+  def sample_report(api_key, md5)
     if api_key == nil or api_key == ''
       return Result.new(status=INPUT_ERROR, msg='API key cannot be null or empty String')
     end
@@ -154,11 +149,7 @@ class Sandbox
       return Result.new(status=INPUT_ERROR, msg='MD5 cannot be null or empty String')
     end
 
-    if filters != nil
-      body = {:api_key => api_key, :md5 => md5, :output_filters => filters}
-    else
-      body = {:api_key => api_key, :md5 => md5}
-    end
+    body = {:api_key => api_key, :md5 => md5}
 
     return do_post(body, URL_DOWNLOAD_REPORT)
   end
