@@ -286,6 +286,10 @@ class Intel
     end
 
     if filters != nil
+      if filters.length > 10
+        return Result.new(status=INPUT_ERROR, msg='Parameter \'output_filters\' takes at most 10 values (%s given)' % [filters.length])
+      end
+
       body = {:api_key => api_key, :md5 => md5, :output_filters => filters}
     else
       body = {:api_key => api_key, :md5 => md5}
