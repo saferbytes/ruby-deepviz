@@ -96,40 +96,40 @@ result = intel.sample_info("my-api-key", "MD5-hash", ["classification","rules"])
 puts result
 ```
 
-To retrieve intel data about one or more IPs:
+To retrieve intel data about an IP:
 
 ```ruby
 require 'deepviz/intel'
 intel = Intel.new
-result = intel.ip_info("my-api-key", {'ip' => ['1.22.28.94', '1.23.214.1']})
+result = intel.ip_info("my-api-key", '8.8.8.8')
 puts result
 ```
 
-To retrieve intel data about IPs contacted in the last 7 days:
+To retrieve intel data about an IP with output filters:
 
 ```ruby
 require 'deepviz/intel'
 intel = Intel.new
-result = intel.ip_info("my-api-key", {'time_delta' => '7d'})
+result = intel.ip_info("my-api-key", '8.8.8.8', ['generic_info'])
 puts result
 ```
 
-To retrieve intel data about one or more domains:
+To retrieve intel data about a domain:
 
 ```ruby
 require 'deepviz/intel'
 intel = Intel.new
-result = intel.domain_info("my-api-key", {'domain' => ['google.com'], 'filters' => ["sub_domains"]})
+result = intel.domain_info("my-api-key", 'google.com')
 
 puts result
 ```
 
-To retrieve newly registered domains in the last 7 days:
+To retrieve intel data about a domain with output filters:
 
 ```ruby
 require 'deepviz/intel'
 intel = Intel.new
-result = intel.domain_info("my-api-key", {'time_delta' => '7d', 'filters' => ["whois"]})
+result = intel.domain_info("my-api-key", 'google.com', ['generic_info'])
 
 puts result
 ```
