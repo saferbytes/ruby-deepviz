@@ -50,20 +50,20 @@ puts result
 result = intel.sample_info(API_KEY, 'a6ca3b8c79e1b7e2a6ef046b0702aeb2', ['hash', 'classification'])
 puts result
 
-# To retrieve intel data about  IPs in the last 7 days:
-result = intel.ip_info(API_KEY, {'time_delta' => '7d'})
+# To retrieve intel data an IP:
+result = intel.ip_info(API_KEY, '8.8.8.8')
 puts result
 
-# To retrieve intel data about one or more IPs:
-result = intel.ip_info(API_KEY, {'ip' => ['1.22.28.94', '1.23.214.1']})
+# To retrieve intel data an IP with output_filters:
+result = intel.ip_info(API_KEY, '8.8.8.8', ['generic_info'])
 puts result
 
-# To retrieve intel data about one or more domains:
-result = intel.domain_info(API_KEY, {'domain' => ['google.com']})
+# To retrieve intel data about a domain:
+result = intel.domain_info(API_KEY, 'google.com')
 puts result
 
-# To retrieve newly registered domains in the last 7 days:
-result = intel.domain_info(API_KEY, {'time_delta' => '7d'})
+# To retrieve intel data about a domain with output_filters
+result = intel.domain_info(API_KEY, 'google.com', ['generic_info'])
 puts result
 
 # To run generic search based on strings
@@ -75,41 +75,3 @@ puts result
 # (find all MD5 samples connecting to a domain and determined as malicious):
 result = intel.advanced_search(API_KEY, {'domain' => ['justfacebook.net'], 'classification' => 'M'})
 puts result
-
-# Find all domains registered in the last 7 days, print out the malware tags related to them and
-# list all MD5 samples connecting to them. Then for each one of the samples retrieve the matched
-# behavioral rules
-
-result_domains = intel.domain_info(API_KEY, {'time_delta' => '3d'})
-if result_domains.status == SUCCESS
-  domains = result_domains.msg
-  for domain in domains.keys
-    result_list_samples = intel.advanced_search(API_KEY, {'domain' => [domain], 'classification' => 'M'})
-    if result_list_samples.status == SUCCESS
-      if result_list_samples.msg.kind_of?(Array)
-        if domains[domain]['tag'].any?
-          puts 'DOMAIN: %s ==> %s samples [TAG: %s]' % [domain, result_list_samples.msg.length, domains[domain]['tag'].join(', ')]
-        else
-          puts 'DOMAIN: %s ==> %s samples' % [domain, result_list_samples.msg.length]
-        end
-
-        for md5 in result_list_samples.msg
-          result_report = intel.sample_info(API_KEY, md5, filters=['rules'])
-          if result_report.status == SUCCESS
-            puts '%s => [%s]' % [md5, result_report.msg['rules'].join(',')]
-          else
-            puts result_report
-            break
-          end
-        end
-      else
-        puts 'DOMAIN: %s ==> No samples found' % domain
-      end
-    else
-      puts result_list_samples
-      break
-    end
-  end
-else
-  puts result_domains
-end

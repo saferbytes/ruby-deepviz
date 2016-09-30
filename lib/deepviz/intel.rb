@@ -8,116 +8,65 @@ class Intel
   URL_INTEL_DOMAIN            = 'https://api.deepviz.com/intel/network/domain'
   URL_INTEL_SEARCH_ADVANCED   = 'https://api.deepviz.com/intel/search/advanced'
 
-  def ip_info(api_key, options={})
+  def ip_info(api_key, ip, filters=nil)
     if api_key == nil or api_key == ''
       return Result.new(status=INPUT_ERROR, msg='API key cannot be null or empty String')
     end
 
-    defaults = {
-        :ip => nil,
-        :history => false,
-        :time_delta => nil,
-    }
-
-    options = defaults.merge(options)
-
-    if (!options['ip'].kind_of?(Array) and (options['time_delta'] == nil or options['time_delta'] == '')) or (options['ip'].kind_of?(Array) and options['time_delta'] != nil and options['time_delta'] != '')
-      msg = 'Parameters missing or invalid. You must specify either a list of IPs or time delta'
+    if ip.nil? or ip == ''
+      msg = 'Parameters missing or invalid. You must specify an IP.'
       return Result.new(status=INPUT_ERROR, msg=msg)
     end
 
-    if options['history']
-      _history = 'true'
-    else
-      _history = 'false'
+    if filters != nil and !filters.kind_of?(Array)
+      msg = 'You must provide one or more output filters in a list'
+      return Result.new(status=INPUT_ERROR, msg=msg)
     end
 
-    if options['ip'] != nil and !options['ip'].kind_of?(Array)
-      msg = 'You must provide one or more IPs in a list'
-      return Result.new(status=INPUT_ERROR, msg=msg)
-    else
+    if filters != nil
       body = {
-        :ip => options['ip'],
-        :history => _history,
+        :output_filters => filters,
         :api_key => api_key,
+        :ip => ip,
       }
-    end
-
-    if options['time_delta'] != nil and options['time_delta'] != ''
+    else
       body = {
-          :time_delta => options['time_delta'],
-          :history => _history,
           :api_key => api_key,
+          :ip => ip,
       }
     end
 
     return do_post(body, URL_INTEL_IP)
   end
 
-  def domain_info(api_key, options={})
-    if api_key == nil or api_key == ''
+
+  def domain_info(api_key, domain, filters = nil)
+    if api_key.nil? or api_key == ''
       return Result.new(status=INPUT_ERROR, msg='API key cannot be null or empty String')
     end
 
-    defaults = {
-        :domain => nil,
-        :filters => nil,
-        :history => false,
-        :time_delta => nil,
-    }
 
-    options = defaults.merge(options)
-
-    if (!options['domain'].kind_of?(Array) and (options['time_delta'] == nil or options['time_delta'] == '')) or (options['domain'].kind_of?(Array) and options['time_delta'] != nil and options['time_delta'] != '')
-      msg = 'Parameters missing or invalid. You must specify either a list of domains or time delta'
+    if domain.nil? or domain == ''
+      msg = 'Parameters missing or invalid. You must specify an domain.'
       return Result.new(status=INPUT_ERROR, msg=msg)
     end
 
-    if options['history']
-      _history = 'true'
-    else
-      _history = 'false'
-    end
-
-    if options['filters'] != nil and !options['filters'].kind_of?(Array)
+    if filters != nil and !filters.kind_of?(Array)
       msg = 'You must provide one or more output filters in a list'
       return Result.new(status=INPUT_ERROR, msg=msg)
     end
 
-    body = {}
-
-    if options['domain'].kind_of?(Array)
-      if options['filters'] != nil
-        body = {
-          :output_filters => options['filters'],
-          :domain => options['domain'],
-          :history => _history,
+    if filters != nil
+      body = {
+          :output_filters => filters,
           :api_key => api_key,
-        }
-      else
-        body = {
-          :domain => options['domain'],
-          :history => _history,
+          :domain => domain,
+      }
+    else
+      body = {
           :api_key => api_key,
-        }
-      end
-    end
-
-    if options['time_delta'] != nil and options['time_delta'] != ''
-      if options['filters'] != nil
-        body = {
-          :time_delta => options['time_delta'],
-          :output_filters => options['filters'],
-          :history => _history,
-          :api_key => api_key,
-        }
-      else
-        body = {
-          :time_delta => options['time_delta'],
-          :history => _history,
-          :api_key => api_key,
-        }
-      end
+          :domain => domain,
+      }
     end
 
     return do_post(body, URL_INTEL_DOMAIN)
@@ -300,4 +249,3 @@ class Intel
 
   private :do_post
 end
-
